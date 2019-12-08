@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "lib": ["es2017"],
+        "outDir": "./dist/src",
+        "module": "commonjs",
+        "target": "es6",
+        "typeRoots": ["node_modules/@types"],
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "sourceMap": true,
+        "inlineSources": true,
+        "resolveJsonModule": true,
+        "types": ["node"],
+    },
+    "compileOnSave": true,
+}

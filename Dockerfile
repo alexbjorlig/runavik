@@ -22,7 +22,7 @@ COPY package-lock.json package-lock.json
 
 # This install npm dependencies on the balena build server,
 # making sure to clean up the artifacts it creates in order to reduce the image size.
-RUN JOBS=MAX npm install --production --unsafe-perm && rm -rf /tmp/*
+RUN JOBS=MAX npm install --unsafe-perm && rm -rf /tmp/*
 
 # This will copy all files in our root to the working  directory in the container
 COPY . ./
