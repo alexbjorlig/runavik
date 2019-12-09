@@ -1,8 +1,10 @@
 import { rotaryEncoder } from "./rotary-encoder";
 import { cleanupLcd, printToLCD } from "./lcd";
 
-rotaryEncoder(23, 24).subscribe(v => {
-  printToLCD({ message: "".repeat(16), row: 1 });
+console.log("Starting up!");
+
+rotaryEncoder(4, 8).subscribe(v => {
+  printToLCD({ message: " ".repeat(16), row: 1 });
   printToLCD({ message: v.toString(), row: 1 });
 });
 
