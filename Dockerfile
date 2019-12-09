@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -yq \
    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set up ALSA config
-# COPY config/asound.conf /etc/asound.conf
+COPY config/asound.conf /etc/asound.conf
 
 # Defines our working directory in container
 WORKDIR /usr/src/app
