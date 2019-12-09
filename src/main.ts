@@ -1,7 +1,10 @@
 import { RotaryEncoder } from "./rotary-encoder";
 import { cleanupLcd, printToLCD } from "./lcd";
 
-const rE = new RotaryEncoder(23, 24);
+const RotaryEncoderPin1 = 4;
+const RotaryEncoderPin2 = 8;
+
+const rE = new RotaryEncoder(RotaryEncoderPin1, RotaryEncoderPin2);
 rE.value.subscribe(v => {
   printToLCD({
     message: "".repeat(16),
