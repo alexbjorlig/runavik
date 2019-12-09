@@ -1,13 +1,22 @@
 import { RotaryEncoder } from "./rotary-encoder";
+import { AlarmSwitch } from "./alarm-switch";
 import { cleanupLcd, printToLCD } from "./lcd";
 
-const RotaryEncoderPin1 = 4;
-const RotaryEncoderPin2 = 8;
+console.log("Starting up!");
 
-const rE = new RotaryEncoder(RotaryEncoderPin1, RotaryEncoderPin2);
+const rotaryEncoderPin1 = 4;
+const rotaryEncoderPin2 = 8;
+const alarmSwitchPin = 7;
+
+const aS = new AlarmSwitch(alarmSwitchPin);
+aS.value.subscribe(v => {
+  console.log(`Alarm Switch is ${v ? "on" : "off"}`);
+});
+
+const rE = new RotaryEncoder(rotaryEncoderPin1, rotaryEncoderPin2);
 rE.value.subscribe(v => {
   printToLCD({
-    message: "".repeat(16),
+    message: " ".repeat(16),
     row: 1
   });
 

@@ -7,7 +7,7 @@ export class RotaryEncoder {
   private a: number = 0;
   private b: number = 0;
   private _value: number = 0;
-  public value: BehaviorSubject<any> = new BehaviorSubject(this._value);
+  public value: BehaviorSubject<number> = new BehaviorSubject(this._value);
 
   constructor(pin1: number, pin2: number) {
     this.button1 = new Gpio(pin1, "in", "both");
@@ -22,7 +22,8 @@ export class RotaryEncoder {
         throw err;
       }
       this.a = val;
-      console.log(`A: ${val}`);
+      console.log(`RotaryA: ${val}`);
+      this.update();
     });
 
     //Watch for hardware interrupt of switch 2
@@ -31,20 +32,22 @@ export class RotaryEncoder {
         throw err;
       }
       this.b = val;
-      console.log(`B: ${val}`);
-
-      //only evaluate if a = 1
-      if (this.a == 1 && this.b == 1) {
-        // observer.next(1);
-        this._value++;
-      } else if (this.a == 1 && this.b == 0) {
-        // observer.next(-1);
-        this._value--;
-      }
-
-      console.log(`VALUE TO PRINT: ${this._value}`);
-      this.value.next(this._value);
+      console.log(`RotaryB: ${val}`);
+      this.update();
     });
+  }
+
+  public update(): void {
+    if (this.a == 1 && this.b == 1) {
+      this._value++;
+    } else if (this.a == 1 && this.b == 0) {
+      this._value--;
+    }
+
+    if (this._value !== this.value.value) {
+      console.log(`Rotary VALUE: ${this._value}`);
+      this.value.next(this._value);
+    }
   }
 
   public cleanup(): void {
