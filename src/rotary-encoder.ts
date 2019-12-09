@@ -1,46 +1,54 @@
-import { Observable } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 const Gpio = require("onoff").Gpio;
 
-export function rotaryEncoder(pin1: number, pin2: number): Observable<number> {
-  const observableToReturn: Observable<number> = Observable.create(function(
-    observer
-  ) {
-    const button1 = new Gpio(pin1, "in", "both");
-    const button2 = new Gpio(pin2, "in", "both");
-    let a = 0;
-    let b = 0;
-    let v = 0;
+export class RotaryEncoder {
+  private button1 = null;
+  private button2 = null;
+  private a: number = 0;
+  private b: number = 0;
+  private _value: number = 0;
+  public value: BehaviorSubject<any> = new BehaviorSubject(this._value);
 
-    function exit() {
-      button1.unexport();
-      process.exit();
-    }
+  constructor(pin1: number, pin2: number) {
+    this.button1 = new Gpio(pin1, "in", "both");
+    this.button2 = new Gpio(pin2, "in", "both");
+    this.setup();
+  }
 
+  private setup(): void {
     //Watch for hardware interrupt of switch 1
-    button1.watch(function(err, value) {
+    this.button1.watch((err, val) => {
       if (err) {
         throw err;
       }
-      a = value;
+      this.a = val;
+      console.log(`A: ${val}`);
     });
 
     //Watch for hardware interrupt of switch 2
-    button2.watch(function(err, value) {
+    this.button2.watch((err, val) => {
       if (err) {
         throw err;
       }
-      b = value;
+      this.b = val;
+      console.log(`B: ${val}`);
 
       //only evaluate if a = 1
-      if (a == 1 && b == 1) {
+      if (this.a == 1 && this.b == 1) {
         // observer.next(1);
-        v++;
-      } else if (a == 1 && b == 0) {
+        this._value++;
+      } else if (this.a == 1 && this.b == 0) {
         // observer.next(-1);
-        v--;
+        this._value--;
       }
-      observer.next(v);
+
+      console.log(`VALUE TO PRINT: ${this._value}`);
+      this.value.next(this._value);
     });
-  });
-  return observableToReturn;
+  }
+
+  public cleanup(): void {
+    this.button1.unexport();
+    this.button2.unexport();
+  }
 }

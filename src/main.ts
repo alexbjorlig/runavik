@@ -1,9 +1,17 @@
-import { rotaryEncoder } from "./rotary-encoder";
+import { RotaryEncoder } from "./rotary-encoder";
 import { cleanupLcd, printToLCD } from "./lcd";
 
-rotaryEncoder(23, 24).subscribe(v => {
-  printToLCD({ message: "".repeat(16), row: 1 });
-  printToLCD({ message: v.toString(), row: 1 });
+const rE = new RotaryEncoder(23, 24);
+rE.value.subscribe(v => {
+  printToLCD({
+    message: "".repeat(16),
+    row: 1
+  });
+
+  printToLCD({
+    message: v.toString(),
+    row: 1
+  });
 });
 
 setInterval(() => {
@@ -13,7 +21,8 @@ setInterval(() => {
 }, 1000);
 
 // If ctrl+c is hit, free resources and exit.
-process.on("SIGINT", _ => {
+process.on("SIGTERM", _ => {
   cleanupLcd();
+  rE.cleanup();
   process.exit();
 });
