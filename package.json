@@ -14,6 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "date-fns": "^2.8.1",
+    "date-fns-tz": "^1.0.8",
     "lcd": "^3.0.0",
     "onoff": "^5.0.0",
     "rxjs": "^6.5.3"

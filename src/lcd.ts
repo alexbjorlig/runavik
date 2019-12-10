@@ -1,5 +1,3 @@
-import { Subject } from "rxjs";
-import { filter, tap } from "rxjs/operators";
 import * as Lcd from "lcd";
 
 export interface LcdMessage {
@@ -8,59 +6,67 @@ export interface LcdMessage {
   column?: number;
 }
 
-const lcd = new Lcd({ rs: 14, e: 15, data: [5, 6, 13, 26], cols: 8, rows: 2 });
-let cancelled = false;
-let ready = false;
+export class LCD {
+  private lcd = null;
+  private ready = false;
+  private cancelled = false;
+  private printTasks: LcdMessage[] = [];
 
-const printTasks: LcdMessage[] = [];
+  constructor() {
+    this.lcd = new Lcd({ rs: 14, e: 15, data: [5, 6, 13, 26], cols: 16, rows: 2 });
+    this.processLCD();
+  }
 
-async function setupLCD() {
-  return new Promise(resolve => {
-    lcd.on("ready", () => {
-      ready = true;
-      resolve();
-    });
-  });
-}
+  private async processLCD(): Promise<void> {
+    if (this.cancelled) {
+      return;
+    }
 
-async function asyncPrint(value) {
-  return new Promise((resolve, reject) => {
-    lcd.print(value, err => {
-      if (!err) {
+    if (!this.ready) {
+      await this.setupLCD();
+    }
+
+    const messageToPrint = this.printTasks.shift();
+    if (messageToPrint) {
+      const { column = 0, row = 0, message } = messageToPrint;
+      // First position cursor
+      this.lcd.setCursor(column, row);
+      // Next, print message
+      await this._print(message);
+    }
+
+    //Process next LCD in 50ms
+    setTimeout(() => this.processLCD(), 50);
+  }
+
+  private async setupLCD(): Promise<void> {
+    return new Promise(resolve => {
+      this.lcd.on("ready", () => {
+        this.ready = true;
         resolve();
-      } else {
-        reject(err);
-      }
+      });
     });
-  });
-}
-
-export function printToLCD(lcdMessage: LcdMessage) {
-  printTasks.push(lcdMessage);
-}
-
-export function cleanupLcd() {
-  cancelled = true;
-  lcd.close();
-}
-
-async function processLCD() {
-  if (cancelled === true) {
-    return;
   }
-  if (ready === false) {
-    await setupLCD();
-  }
-  const messageToPrint = printTasks.shift();
-  if (messageToPrint) {
-    const { column = 0, row = 0, message } = messageToPrint;
-    // First position cursor
-    lcd.setCursor(column, row);
-    // Next, print message
-    await asyncPrint(message);
-  }
-  // Process next LCD in 50ms
-  setTimeout(() => processLCD(), 50);
-}
 
-processLCD();
+  private async _print(value): Promise<void> {
+    return new Promise((resolve, reject) => this.lcd.print(value, err => (!err ? resolve() : reject(err))));
+  }
+
+  public print(lcdMessage: LcdMessage): void {
+    this.printTasks.push(lcdMessage);
+  }
+
+  public clearScreen(row: number = 0, chars: number = 16, column: number = 0): void {
+    const clearScreenMessage = {
+      message: " ".repeat(chars),
+      row,
+      column
+    };
+    this.printTasks.push(clearScreenMessage);
+  }
+
+  public cleanup(): void {
+    this.cancelled = true;
+    this.lcd.close();
+  }
+}
