@@ -18,15 +18,15 @@ http://www.farnell.com/datasheets/1521578.pdf
 ## PINS
 
 LCD:
-GPIO 05, 06, 13, 26 = Pin 11, 12, 13, 14 = brune
-Pin 15 = hvid
-GPIO 15 = Pin 6 = sort
-GPIO 14 = Pin 4 = orange
-Pin 3 = lilla
+ - GPIO 05, 06, 13, 26 = Pin 11, 12, 13, 14 = brune
+ - Pin 15 = hvid
+ - GPIO 15 = Pin 6 = sort
+ - GPIO 14 = Pin 4 = orange
+ - Pin 3 = lilla
 
 On/Off:
-GPIO 07 = grøn
+ - GPIO 07 = grøn
 
 Rotary:
-GPIO 04 = gul
-GPIO 08 = grå
+ - GPIO 04 = gul
+ - GPIO 08 = grå
