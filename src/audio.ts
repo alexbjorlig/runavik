@@ -24,7 +24,7 @@ export class AudioPlayer {
   //Play the audio via child process
   public play(): void {
     if (!this.processId) {
-      this.audioProcess = spawn("aplay", [path.join(__dirname, "../audio", "audio1.wav")], { stdio: "ignore" });
+      this.audioProcess = spawn("aplay", [path.join(__dirname, "../audio", this.pickAudio())], { stdio: "ignore" });
       this.processId = this.audioProcess.pid;
       console.log("playing audio with id:", this.processId);
 
@@ -42,5 +42,9 @@ export class AudioPlayer {
     if (this.processId) {
       this.audioProcess.kill("SIGINT");
     }
+  }
+
+  private pickAudio(): string {
+    return "waves.wav";
   }
 }
