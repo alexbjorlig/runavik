@@ -2,13 +2,7 @@ import { RotaryEncoder } from "./rotary-encoder";
 import { AlarmSwitch } from "./alarm-switch";
 import { AudioPlayer } from "./audio";
 import { LCD } from "./lcd";
-import {
-  filter,
-  debounceTime,
-  distinctUntilChanged,
-  tap,
-  bufferTime
-} from "rxjs/operators";
+import { filter, debounceTime, distinctUntilChanged, tap, bufferTime } from "rxjs/operators";
 import { parse, addMinutes, format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { combineLatest } from "rxjs";
@@ -19,8 +13,7 @@ console.log("Starting up!");
 const defaultAlarmTime = "06:00"; // The default alarm time
 const timeFormat = "HH:mm"; // The time format
 const timezone = "Europe/Copenhagen"; // The timezone
-const defaultVolume = 40; // The default volume in %
-const maxVolume = 70;
+const defaultVolume = 70; // The default volume in %
 const rotaryEncoderPin1 = 8; // The rotary encoder first input pin
 const rotaryEncoderPin2 = 4; // The rotary encoder second input pin
 const alarmSwitchPin = 7; // The switch input pin
@@ -68,12 +61,9 @@ function updateAlarmTime(value: number) {
 }
 //Update the volume and show it on the LCD screen
 function updateVolume(value: number) {
+  clearTO();
   // Convert the rotary encoder's value to a volume
   const volume = defaultVolume + (value / 2) * 10;
-  if (volume > maxVolume) {
-    return;
-  }
-  clearTO();
   // Set the audio player's volume
   aP.setVolume(volume);
   alarmVolume = volume;
@@ -137,10 +127,7 @@ function toggleAlarmOff() {
   }, 3000);
 }
 
-const rotaryEncoder$ = combineLatest(
-  rE.value.pipe(debounceTime(150)),
-  aS.value
-).pipe(
+const rotaryEncoder$ = combineLatest(rE.value.pipe(debounceTime(150)), aS.value).pipe(
   filter(([rv, sv]) => rv !== lastRotaryValue),
   tap(([rv, sv]) => (lastRotaryValue = rv))
 );
@@ -189,10 +176,7 @@ setInterval(() => {
   const displayTime = time.substring(0, 5);
 
   // Show "HH:mm" with blinking separator every second
-  const formatedDisplay =
-    Number(time[time.length - 1]) % 2 === 0
-      ? displayTime
-      : displayTime.replace(":", " ");
+  const formatedDisplay = Number(time[time.length - 1]) % 2 === 0 ? displayTime : displayTime.replace(":", " ");
   lcd.print({
     message: formatedDisplay,
     row: 0

@@ -50,7 +50,9 @@ export class RotaryEncoder {
 
     if (this.sValue === 1) {
       // Limit volume value to a number between 0% and 100%
-      this._value = clampNumber(this._value, -8, 12);
+      // this._value = clampNumber(this._value, -8, 12);
+      // 10% - 80%
+      this._value = clampNumber(this._value, -12, 2);
     }
 
     if (lastValue !== this._value) {

@@ -1,6 +1,8 @@
 import { spawn, ChildProcess } from "child_process";
 import * as path from "path";
 
+const audioFiles = ["waves"];
+
 export class AudioPlayer {
   private mixer: any;
   private processId: number;
@@ -24,9 +26,10 @@ export class AudioPlayer {
   //Play the audio via child process
   public play(): void {
     if (!this.processId) {
+      const audioToPlay = this.pickAudio();
       this.audioProcess = spawn("aplay", [path.join(__dirname, "../audio", this.pickAudio())], { stdio: "ignore" });
       this.processId = this.audioProcess.pid;
-      console.log("playing audio with id:", this.processId);
+      console.log(`playing ${audioToPlay} with id: ${this.processId}`);
 
       this.audioProcess.on("error", err => {
         throw err;
@@ -45,6 +48,7 @@ export class AudioPlayer {
   }
 
   private pickAudio(): string {
-    return "waves.wav";
+    const random = Math.floor(Math.random() * Math.floor(audioFiles.length));
+    return `${audioFiles[random]}.wav`;
   }
 }
