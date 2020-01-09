@@ -1,7 +1,7 @@
 import { spawn, ChildProcess } from "child_process";
 import * as path from "path";
 
-const audioFiles = ["waves"];
+const audioFiles = ["waves", "nature"];
 
 export class AudioPlayer {
   private mixer: any;
