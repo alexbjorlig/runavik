@@ -2,8 +2,9 @@ import { RotaryEncoder } from "./rotary-encoder";
 import { AlarmSwitch } from "./alarm-switch";
 import { AudioPlayer } from "./audio";
 import { LCD } from "./lcd";
+import { Hue } from "./hue";
 import { filter, debounceTime, distinctUntilChanged, tap, bufferTime } from "rxjs/operators";
-import { parse, addMinutes, format } from "date-fns";
+import { parse, addMinutes, format, subMinutes } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { combineLatest } from "rxjs";
 import { AlarmMemory } from "./alarm-memory";
@@ -11,9 +12,10 @@ import { AlarmMemory } from "./alarm-memory";
 console.log("Starting up!");
 
 const defaultAlarmTime = "06:00"; // The default alarm time
+const defaultLightAlarmDifference = 30; // The number of minutes the light should turn on before the alarm sound starts
 const timeFormat = "HH:mm"; // The time format
 const timezone = "Europe/Copenhagen"; // The timezone
-const defaultVolume = 70; // The default volume in %
+const defaultVolume = 60; // The default volume in %
 const rotaryEncoderPin1 = 8; // The rotary encoder first input pin
 const rotaryEncoderPin2 = 4; // The rotary encoder second input pin
 const alarmSwitchPin = 7; // The switch input pin
@@ -26,11 +28,14 @@ let { alarmTime, alarmVolume } = memory.load();
 const aP = new AudioPlayer(alarmVolume);
 const aS = new AlarmSwitch(alarmSwitchPin);
 const rE = new RotaryEncoder(rotaryEncoderPin1, rotaryEncoderPin2, aS);
+const hue = new Hue();
 
 let alarmArmed: boolean; // Is the alarm armed to wake up?
+let lightArmed: boolean; // is the light armed to wake up?
 let demoTime = false; // Is it time for a demo?
 let lastRotaryValue = 0; // Used to determine whether to react on events or not
 let clearScreenTimeout; // Used in need of cancelling clear screen timeouts
+let lightAlarmTime; // Default to 30 mins before alarmtime to start light sequence
 
 const clearTO = () => {
   if (clearScreenTimeout) {
@@ -47,6 +52,7 @@ function updateAlarmTime(value: number) {
   const displayTime = addMinutes(date, (value / 2) * 10);
   // Save and format the current alarm time for future use
   alarmTime = format(displayTime, "HH:mm");
+  lightAlarmTime = format(subMinutes(displayTime, 30), "HH:mm");
 
   lcd.clearScreen(1);
 
@@ -91,6 +97,8 @@ function updateVolume(value: number) {
 //Toggle the alarm on and show it on the LCD screen
 function toggleAlarmOn() {
   clearTO();
+
+  lightAlarmTime = format(subMinutes(parse(alarmTime, "HH:mm", new Date()), defaultLightAlarmDifference), "HH:mm");
   // Show confirmation that alarm has been set
   lcd.print({
     message: alarmTime ? ` Alarm kl. ${alarmTime}` : " ".repeat(16),
@@ -149,10 +157,12 @@ rotaryEncoder$.subscribe(([rotaryValue, sv]) => {
 alarmSwitch$.subscribe(switchValue => {
   if (switchValue === 1) {
     alarmArmed = true;
+    lightArmed = true;
     toggleAlarmOn();
   }
   if (switchValue === 0) {
     alarmArmed = false;
+    lightArmed = false;
     toggleAlarmOff();
   }
 });
@@ -182,6 +192,12 @@ setInterval(() => {
     row: 0
   });
 
+  // Start the light sequence
+  if (displayTime === lightAlarmTime && lightArmed) {
+    hue.startWakeupSequence();
+    lightArmed = false;
+  }
+
   // Ring the ALARM!
   if (displayTime === alarmTime && alarmArmed) {
     aP.play();
@@ -190,6 +206,7 @@ setInterval(() => {
 
   if (demoTime) {
     aP.play();
+    hue.startWakeupSequence();
     demoTime = false;
   }
 }, 1000);
