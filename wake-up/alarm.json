@@ -1,4 +1,5 @@
 {
   "alarmTime": "16:34",
-  "alarmVolume": 50
+  "alarmVolume": 50,
+  "audioFile": "waves.wav"
 }

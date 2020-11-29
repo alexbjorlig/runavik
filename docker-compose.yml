@@ -5,31 +5,33 @@ services:
     restart: always
     build: ./wake-up
     privileged: true
+    ports:
+      - "6969:6969"
     devices:
       - "/sys/class/gpio/gpio14/value:/sys/class/gpio/gpio14/value"
-  bluetooth-audio:
-    network_mode: host
-    restart: always
-    build: ./bluetooth-audio
-    privileged: true
-    labels:
-      io.balena.features.dbus: 1
-    volumes:
-      - bluetoothcache:/var/cache/bluetooth
-  airplay:
-    build: ./airplay
-    restart: always
-    network_mode: host
-    privileged: true
-    labels:
-      io.balena.features.dbus: 1
-  spotify:
-    build: ./spotify
-    restart: always
-    network_mode: host
-    privileged: true
-    volumes:
-      - spotifycache:/var/cache/raspotify
-volumes:
-  spotifycache:
-  bluetoothcache:
+  # bluetooth-audio:
+  #   network_mode: host
+  #   restart: always
+  #   build: ./bluetooth-audio
+  #   privileged: true
+  #   labels:
+  #     io.balena.features.dbus: 1
+  #   volumes:
+  #     - bluetoothcache:/var/cache/bluetooth
+  # airplay:
+  #   build: ./airplay
+  #   restart: always
+  #   network_mode: host
+  #   privileged: true
+  #   labels:
+  #     io.balena.features.dbus: 1
+  # spotify:
+  #   build: ./spotify
+  #   restart: always
+  #   network_mode: host
+  #   privileged: true
+  #   volumes:
+  #     - spotifycache:/var/cache/raspotify
+# volumes:
+#   spotifycache:
+#   bluetoothcache:

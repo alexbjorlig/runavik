@@ -7,9 +7,15 @@ export class AudioPlayer {
   private mixer: any;
   private processId: number;
   private audioProcess: ChildProcess;
+  private audioFile: string;
 
-  constructor(volume: number = 40) {
+  constructor(audioFile: string, volume: number = 40,) {
     this.setVolume(volume);
+    this.setAudioFile(audioFile);
+  }
+
+  public setAudioFile(name: string): void {
+    this.audioFile = name;
   }
 
   //Setting the volume via child process
@@ -48,7 +54,7 @@ export class AudioPlayer {
   }
 
   private pickAudio(): string {
-    const random = Math.floor(Math.random() * Math.floor(audioFiles.length));
-    return `${audioFiles[random]}.wav`;
+    // const random = Math.floor(Math.random() * Math.floor(audioFiles.length));
+    return `${this.audioFile}`;
   }
 }

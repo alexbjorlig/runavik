@@ -6,11 +6,13 @@ export class AlarmMemory {
   private filePath = path.join(__dirname, "..", "alarm.json");
   private storedTime: string;
   private storedVolume: number;
+  private storedFile: string;
 
   constructor() {
-    const { alarmTime, alarmVolume } = savedAlarm;
+    const { alarmTime, alarmVolume, audioFile } = savedAlarm;
     this.storedTime = alarmTime;
     this.storedVolume = alarmVolume;
+    this.storedFile = audioFile;
   }
 
   public saveTime(alarmTime: string): void {
@@ -37,10 +39,23 @@ export class AlarmMemory {
     }
   }
 
-  public load(): { alarmTime: string; alarmVolume: number } {
+  public saveFile(audioFile: string): void {
+    const alarmJson = { audioFile, alarmVolume: this.storedVolume, alarmTime: this.storedTime };
+    this.storedFile = audioFile;
+    try {
+      fs.writeFile(this.filePath, JSON.stringify(alarmJson), () => {
+        console.log(`saved file: ${audioFile}`);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  public load(): { alarmTime: string, alarmVolume: number, audioFile: string } {
     return {
       alarmTime: this.storedTime || null,
-      alarmVolume: this.storedVolume || 0
+      alarmVolume: this.storedVolume || 0,
+      audioFile: this.storedFile || 'waves.wav'
     };
   }
 }

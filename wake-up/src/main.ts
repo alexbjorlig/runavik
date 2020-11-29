@@ -8,6 +8,7 @@ import { parse, addMinutes, format, subMinutes } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { combineLatest } from "rxjs";
 import { AlarmMemory } from "./alarm-memory";
+import { WebServer } from "./web-server";
 
 console.log("Starting up!");
 
@@ -23,12 +24,14 @@ const alarmSwitchPin = 7; // The switch input pin
 //Components
 const lcd = new LCD();
 const memory = new AlarmMemory();
-let { alarmTime, alarmVolume } = memory.load();
+let { alarmTime, alarmVolume, audioFile } = memory.load();
 
-const aP = new AudioPlayer(alarmVolume);
+const aP = new AudioPlayer(audioFile, alarmVolume);
 const aS = new AlarmSwitch(alarmSwitchPin);
 const rE = new RotaryEncoder(rotaryEncoderPin1, rotaryEncoderPin2, aS);
 const hue = new Hue();
+const ws = new WebServer(aP, memory);
+ws.start();
 
 let alarmArmed: boolean; // Is the alarm armed to wake up?
 let lightArmed: boolean; // is the light armed to wake up?
@@ -135,7 +138,7 @@ function toggleAlarmOff() {
   }, 3000);
 }
 
-const rotaryEncoder$ = combineLatest(rE.value.pipe(debounceTime(150)), aS.value).pipe(
+const rotaryEncoder$ = combineLatest([rE.value.pipe(debounceTime(150)), aS.value]).pipe(
   filter(([rv, sv]) => rv !== lastRotaryValue),
   tap(([rv, sv]) => (lastRotaryValue = rv))
 );

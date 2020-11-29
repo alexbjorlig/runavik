@@ -1,6 +1,7 @@
-sudo balena scan
-sudo balena push 192.168.0.130 -s .
-sudo balena logs 192.168.8.122 --tail
+1. sudo balena scan
+2. start docker
+3. sudo balena push 192.168.0.130 -s .
+4. sudo balena logs 192.168.8.122 --tail
 
 ### Usefull links
 

@@ -14,12 +14,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "date-fns": "^2.8.1",
     "date-fns-tz": "^1.0.8",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
     "huejay": "^1.9.0",
     "lcd": "^3.0.0",
     "onoff": "^5.0.0",
-    "rxjs": "^6.5.3"
+    "rxjs": "^6.5.3",
+    "serve-index": "^1.9.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.14",
