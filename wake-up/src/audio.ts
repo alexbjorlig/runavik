@@ -1,4 +1,5 @@
 import { spawn, ChildProcess } from "child_process";
+import * as fs from "fs";
 import * as path from "path";
 
 const audioFiles = ["waves", "nature"];
@@ -12,6 +13,10 @@ export class AudioPlayer {
   constructor(audioFile: string, volume: number = 40,) {
     this.setVolume(volume);
     this.setAudioFile(audioFile);
+  }
+
+  public getAudioFiles(): string[] {
+    return fs.readdirSync(path.join(__dirname, "../audio"))
   }
 
   public setAudioFile(name: string): void {

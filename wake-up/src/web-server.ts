@@ -65,7 +65,7 @@ export class WebServer {
     })
 
     this.app.get('/', async (req, res) => {
-      let filesToPick = ['nature.wav', 'waves.wav']
+      let filesToPick = this.aP.getAudioFiles();
       res.send(`
         <html>
           <body>
@@ -99,4 +99,6 @@ export class WebServer {
       console.log(`Server started on port ${this.port}`);
     });
   }
+
+  private getAudio
 }

@@ -16,7 +16,7 @@ export class AlarmMemory {
   }
 
   public saveTime(alarmTime: string): void {
-    const alarmJson = { alarmTime, alarmVolume: this.storedVolume };
+    const alarmJson = { alarmTime, alarmVolume: this.storedVolume, audioFile: this.storedFile };
     this.storedTime = alarmTime;
     try {
       fs.writeFile(this.filePath, JSON.stringify(alarmJson), () => {
@@ -28,7 +28,7 @@ export class AlarmMemory {
   }
 
   public saveVolume(alarmVolume: number): void {
-    const alarmJson = { alarmVolume, alarmTime: this.storedTime };
+    const alarmJson = { alarmVolume, alarmTime: this.storedTime, audioFile: this.storedFile };
     this.storedVolume = alarmVolume;
     try {
       fs.writeFile(this.filePath, JSON.stringify(alarmJson), () => {
