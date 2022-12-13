@@ -18,7 +18,7 @@
     "cors": "^2.8.5",
     "date-fns": "^2.8.1",
     "date-fns-tz": "^1.0.8",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-fileupload": "^1.2.0",
     "huejay": "^1.9.0",
     "lcd": "^3.0.0",
